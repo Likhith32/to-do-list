@@ -1,0 +1,105 @@
+import json
+import os
+TASK_FILE = "tasks.json"
+tasks = []
+
+def load_tasks():
+    global tasks
+    if os.path.exists(TASK_FILE):
+        try:
+            with open(TASK_FILE, "r") as file:
+                tasks = json.load(file)
+        except json.JSONDecodeError:
+            tasks = []
+    else:
+        tasks = []
+
+def save_tasks():
+    
+    with open(TASK_FILE, "w") as file:
+        json.dump(tasks, file, indent=4)
+
+def display_menu():
+    
+    print("\n*To-Do List App*")
+    print("1. Add Task To The List")
+    print("2. View Tasks In The List")
+    print("3. Edit Task In The List")
+    print("4. Delete The Desired Task")
+    print("5. Save and Quit")
+
+def view_tasks():
+    
+    if not tasks:
+        print("Your task list is empty.")
+    else:
+        print("\nYour Tasks:")
+        for idx, task in enumerate(tasks, start=1):
+            status = "✔️" if task['completed'] else "❌"
+            print(f"{idx}. [{status}] {task['description']}")
+
+def add_task():
+
+    description = input("Enter the task description: ")
+    if description:
+        tasks.append({"description": description, "completed": False})
+        print(f"Task '{description}' added.")
+    else:
+        print("Task description cannot be empty.")
+
+def edit_task():
+    
+    view_tasks()
+    try:
+        task_number = int(input("Enter the task number to edit: "))
+        if 1 <= task_number <= len(tasks):
+            new_description = input("Enter the new description: ")
+            if new_description:
+                tasks[task_number - 1]['description'] = new_description
+                print("Task updated successfully.")
+            else:
+                print("New description cannot be empty.")
+        else:
+            print("Invalid task number.")
+    except ValueError:
+        print("Please enter a valid number.")
+
+def delete_task():
+    
+    view_tasks()
+    try:
+        task_number = int(input("Enter the task number to delete: "))
+        if 1 <= task_number <= len(tasks):
+            removed_task = tasks.pop(task_number - 1)
+            print(f"Task '{removed_task['description']}' removed.")
+        else:
+            print("Invalid task number.")
+    except ValueError:
+        print("Please enter a valid number.")
+
+
+   
+def main():
+
+    load_tasks()
+    while True:
+        display_menu()
+        choice = input("Choose an option (1-5): ").strip()
+        
+        if choice == "2":
+            view_tasks()
+        elif choice == "1":
+            add_task()
+        elif choice == "3":
+            edit_task()
+        elif choice == "4":
+            delete_task()
+        elif choice == "5":
+            save_tasks()
+            print("Tasks saved successfully!")
+            break
+        else:
+            print("Invalid option. Please choose a number between 1 and 7.")
+
+if __name__ == "__main__":
+    main()
